@@ -1,0 +1,21 @@
+{
+  "name": "Fuel cost calculator",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Adds a fuel cost estimate to Google Maps",
+  "homepage_url": "http://extensionizr.com",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [{
+    "js": ["js/functions.js", "js/main.js"],
+    "matches": ["https://www.google.pl/maps*"]
+  }],
+  "default_locale": "en",
+  "options_page": "src/options/index.html",
+  "permissions": [
+    "https://*/*"
+  ]
+}
