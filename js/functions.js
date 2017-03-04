@@ -6,9 +6,15 @@ const FUEL_USAGE_PER_100_KM = 7;
 const FUEL_PRICE = 4.69;
 const CURRENCY = 'PLN';
 
+function observeChildChanges(container, onChange) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(container, { childList: true });
+  return observer;
+}
+
 function getDrivingTravelPlanContainer() {
   const drivingIcon = document.querySelector(DRIVING_ICON_SELECTOR);
-      
+
   if (drivingIcon) {
     return drivingIcon.parentNode.parentNode;
   } else {
@@ -16,20 +22,7 @@ function getDrivingTravelPlanContainer() {
   }
 }
 
-function getDrivingTravelPlan() {
-  return new Promise(resolve => {
-    const lookForTravelPlanUntilFound = setInterval(() => {
-      const plan = getDrivingTravelPlanContainer();
-
-      if (plan) {
-        clearInterval(lookForTravelPlanUntilFound);
-        resolve(plan);
-      }
-    }, 500);
-  });
-}
-
-function injectFuelEstimation(plan) {
+function injectFuelEstimate(plan) {
   const distances = plan.querySelectorAll(DISTANCES_SELECTOR);
 
   distances.forEach(distance => {
@@ -50,7 +43,21 @@ function calculateFuelUsage(distance) {
   return Math.round(distance * FUEL_USAGE_PER_100_KM/100 * FUEL_PRICE);
 }
 
-function observeTextChanges(container, onChange) {
-  const observer = new MutationObserver(onChange);
-  observer.observe(container, { childList: true });
+function watchTravelPlanChangesAndInjectFuelEstimate() {
+  let previousPlan;
+  let planObserver;
+
+  setInterval(() => {
+    const plan = getDrivingTravelPlanContainer();
+
+    if (plan && plan !== previousPlan) {
+      if (planObserver) {
+        planObserver.disconnect();
+      }
+
+      injectFuelEstimate(plan);
+      planObserver = observeChildChanges(plan, () => injectFuelEstimate(plan));
+      previousPlan = plan;
+    }
+  }, 300);
 }
