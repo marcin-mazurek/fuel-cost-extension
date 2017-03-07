@@ -36,7 +36,7 @@ function injectFuelEstimate(plan) {
   });
 }
 
-const formatter = new Intl.NumberFormat(LOCALE, { style: 'currency', currency: CURRENCY });
+const formatter = new Intl.NumberFormat(LOCALE, { style: 'currency', currency: CURRENCY, maximumSignificantDigits: 0 });
 
 function createFuelCostLabel(cost) {
   const fuelUsageElement = document.createElement('div');
